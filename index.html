@@ -6,217 +6,255 @@
 <title>Stoner Flow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;700&family=Outfit:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --mist: #d7ebe3;
+    --sage: #6f9f86;
+    --deep-sage: #2f5a48;
+    --dawn: #f2c14e;
+    --clay: #c46b4a;
+    --sky: #9ec9c2;
+    --ink: #1e332c;
+    --cream: #f7faf7;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body { width: 100%; height: 100%; }
 
   body {
     min-height: 100vh;
+    overflow: hidden;
+    position: relative;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    overflow: hidden;
-    position: relative;
-    background: linear-gradient(
-      135deg,
-      #e8a33d, #d96c3b, #b5573e, #6b8e3d, #3f8e7c, #c95d8a, #e8a33d
-    );
-    background-size: 400% 400%;
-    animation: drift 28s ease infinite;
+    color: var(--ink);
+    background:
+      radial-gradient(ellipse 90% 70% at 15% 85%, rgba(196, 107, 74, 0.28), transparent 55%),
+      radial-gradient(ellipse 80% 60% at 88% 12%, rgba(242, 193, 78, 0.35), transparent 50%),
+      linear-gradient(165deg, #b8ddd2 0%, #e8f3ee 38%, #f6ead7 72%, #d4e8df 100%);
   }
 
-  @keyframes drift {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  /* soft glowing earth-light blobs */
-  body::before, body::after {
-    content: "";
+  /* full-bleed atmospheric plane */
+  .sky {
     position: fixed;
-    border-radius: 50%;
-    filter: blur(70px);
-    opacity: 0.45;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 40%),
+      repeating-linear-gradient(
+        -12deg,
+        transparent 0,
+        transparent 18px,
+        rgba(47, 90, 72, 0.03) 18px,
+        rgba(47, 90, 72, 0.03) 19px
+      );
+  }
+
+  .horizon {
+    position: fixed;
+    left: -10%;
+    right: -10%;
+    bottom: -8%;
+    height: 42vh;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 100%, rgba(47, 90, 72, 0.45), transparent 70%),
+      linear-gradient(180deg, transparent 0%, rgba(47, 90, 72, 0.22) 55%, rgba(30, 51, 44, 0.35) 100%);
+    clip-path: polygon(0 38%, 12% 28%, 24% 42%, 38% 22%, 52% 36%, 68% 18%, 82% 34%, 100% 24%, 100% 100%, 0 100%);
+    animation: breathe-land 14s ease-in-out infinite;
+  }
+
+  @keyframes breathe-land {
+    0%, 100% { transform: translateY(0) scaleX(1); }
+    50% { transform: translateY(-1.2vh) scaleX(1.01); }
+  }
+
+  #flow-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
     pointer-events: none;
   }
-  body::before {
-    width: 45vmax; height: 45vmax;
-    top: -12vmax; left: -10vmax;
-    background: radial-gradient(circle, #f4d35e 0%, transparent 70%);
-    animation: bob 16s ease-in-out infinite;
-  }
-  body::after {
-    width: 40vmax; height: 40vmax;
-    bottom: -14vmax; right: -10vmax;
-    background: radial-gradient(circle, #8fbf6b 0%, transparent 70%);
-    animation: bob 22s ease-in-out infinite reverse;
-  }
-  @keyframes bob {
-    0%,100% { transform: translate(0,0); }
-    50%     { transform: translate(4vmax, 5vmax); }
-  }
 
-  /* falling foliage */
-  #fall-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
-
-  .drop {
-    position: absolute;
-    top: -12vh;
-    will-change: transform;
-    animation-name: fall;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-  .drop .spin {
-    display: block;
-    width: 100%; height: 100%;
-    animation-name: sway-spin;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-  }
-
-  @keyframes fall {
-    from { transform: translateY(0); }
-    to   { transform: translateY(118vh); }
-  }
-  @keyframes sway-spin {
-    from { transform: translateX(-22px) rotate(-50deg); }
-    to   { transform: translateX(22px)  rotate(60deg); }
-  }
-
-  .content { position: relative; z-index: 2; padding: 1rem; }
-
-  .title {
-    font-family: 'Pacifico', cursive;
-    font-size: clamp(3.2rem, 13vw, 10rem);
-    line-height: 1;
-    color: #fff8ec;
-    text-shadow:
-      0 0 1px #5a3a1a,
-      3px 4px 0 rgba(90, 58, 26, 0.35),
-      0 6px 26px rgba(0, 0, 0, 0.25);
-    animation: title-sway 7s ease-in-out infinite;
-  }
-  @keyframes title-sway {
-    0%,100% { transform: rotate(-2deg) translateY(0); }
-    50%     { transform: rotate(2deg) translateY(-6px); }
-  }
-
-  .subtitle {
+  .content {
     position: relative;
-    display: inline-block;
-    margin-top: clamp(1.4rem, 4vw, 2.4rem);
-    font-family: 'Quicksand', sans-serif;
+    z-index: 3;
+    padding: 1.25rem 1.5rem;
+    max-width: 18em;
+  }
+
+  .brand {
+    font-family: 'Grandstander', cursive;
     font-weight: 700;
-    font-size: clamp(1.2rem, 3.9vw, 1.95rem);
-    letter-spacing: 0.35em;
-    text-transform: lowercase;
-    padding: 0 0.4em 0.15em;
+    font-size: clamp(3rem, 12vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--deep-sage);
+    text-wrap: balance;
+    animation: brand-drift 9s ease-in-out infinite;
   }
 
-  /* the text itself, made of fire */
-  .fire-text {
-    position: relative;
-    z-index: 2;
-    background: linear-gradient(0deg,
-      #ff3d00 0%, #ff7a00 32%, #ffc400 64%, #fff3b0 100%);
-    background-size: 100% 220%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: #ff8a00;
-    animation: flicker 2.4s ease-in-out infinite,
-               ember 2.8s ease-in-out infinite alternate;
+  .brand span {
+    display: block;
+    color: var(--clay);
   }
 
-  @keyframes flicker {
-    0%, 100% { opacity: 1; background-position: 50% 0%;
-      filter: drop-shadow(0 0 6px rgba(255,120,0,0.55)) drop-shadow(0 -2px 12px rgba(255,60,0,0.45)); }
-    25% { opacity: 0.9; background-position: 50% 35%; }
-    50% { opacity: 1; background-position: 50% 70%;
-      filter: drop-shadow(0 0 11px rgba(255,160,0,0.8)) drop-shadow(0 -3px 18px rgba(255,40,0,0.6)); }
-    72% { opacity: 0.94; background-position: 50% 28%; }
+  @keyframes brand-drift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-0.35rem); }
   }
-  @keyframes ember {
-    from { transform: translateY(0) scale(1); }
-    to   { transform: translateY(-2px) scale(1.012); }
+
+  .tag {
+    margin-top: clamp(1.1rem, 3.5vw, 1.85rem);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: clamp(0.95rem, 2.6vw, 1.2rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.78;
+  }
+
+  .tag em {
+    font-style: normal;
+    color: var(--sage);
+  }
+
+  .ripple {
+    position: absolute;
+    left: 50%;
+    bottom: -1.6rem;
+    width: min(70vw, 16rem);
+    height: 2px;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, transparent, var(--sage), var(--dawn), var(--clay), transparent);
+    opacity: 0.55;
+    animation: ripple-pulse 4.5s ease-in-out infinite;
+  }
+
+  @keyframes ripple-pulse {
+    0%, 100% { transform: translateX(-50%) scaleX(0.72); opacity: 0.35; }
+    50% { transform: translateX(-50%) scaleX(1); opacity: 0.7; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .horizon, .brand, .ripple { animation: none; }
   }
 </style>
 </head>
 <body>
-  <div id="fall-layer"></div>
+  <div class="sky" aria-hidden="true"></div>
+  <div class="horizon" aria-hidden="true"></div>
+  <canvas id="flow-canvas" aria-hidden="true"></canvas>
 
   <div class="content">
-    <h1 class="title">Stoner Flow</h1>
-    <p class="subtitle">
-      <span class="fire-text">lighting&nbsp;up&nbsp;soon</span>
-    </p>
+    <h1 class="brand">Stoner <span>Flow</span></h1>
+    <p class="tag">lighting up <em>soon</em></p>
+    <div class="ripple" aria-hidden="true"></div>
   </div>
 
 <script>
 (function () {
-  const layer = document.getElementById('fall-layer');
+  const canvas = document.getElementById('flow-canvas');
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // shape generators (SVG strings), fill set via currentColor
-  const shapes = {
-    leaf: c => `<svg viewBox="0 0 100 100" style="color:${c}"><path fill="currentColor" d="M50 5 C20 25 15 65 50 95 C85 65 80 25 50 5 Z"/><path stroke="rgba(0,0,0,0.18)" stroke-width="3" fill="none" d="M50 12 L50 90"/></svg>`,
-    petal: c => `<svg viewBox="0 0 100 100" style="color:${c}"><ellipse cx="50" cy="50" rx="24" ry="46" fill="currentColor"/></svg>`,
-    flower: (c, center) => `<svg viewBox="0 0 100 100" style="color:${c}"><g fill="currentColor"><circle cx="50" cy="22" r="13"/><circle cx="50" cy="78" r="13"/><circle cx="22" cy="50" r="13"/><circle cx="78" cy="50" r="13"/><circle cx="30" cy="30" r="13"/><circle cx="70" cy="30" r="13"/><circle cx="30" cy="70" r="13"/><circle cx="70" cy="70" r="13"/></g><circle cx="50" cy="50" r="12" fill="${center}"/></svg>`
-  };
+  let w = 0, h = 0, t = 0;
+  const ribbons = [];
 
-  const greens = ['#7fae4f', '#5d8c39', '#a8d08a', '#3f8e7c'];
-  const petals = ['#f3a6c0', '#f7e07a', '#fff3df', '#e8a33d', '#d96c3b'];
-  const centers = ['#c9603a', '#f7e07a', '#e8a33d'];
+  const palette = [
+    { stroke: 'rgba(111, 159, 134, 0.35)', width: 2.2 },
+    { stroke: 'rgba(196, 107, 74, 0.28)', width: 1.6 },
+    { stroke: 'rgba(242, 193, 78, 0.3)', width: 1.8 },
+    { stroke: 'rgba(47, 90, 72, 0.22)', width: 2.6 },
+    { stroke: 'rgba(158, 201, 194, 0.4)', width: 1.4 }
+  ];
 
-  const rand = (min, max) => Math.random() * (max - min) + min;
-  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  function resize() {
+    w = canvas.width = window.innerWidth * devicePixelRatio;
+    h = canvas.height = window.innerHeight * devicePixelRatio;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  }
 
-  const TOTAL = 34;
+  function makeRibbons() {
+    ribbons.length = 0;
+    const count = Math.min(9, Math.max(5, Math.floor(window.innerWidth / 160)));
+    for (let i = 0; i < count; i++) {
+      const p = palette[i % palette.length];
+      ribbons.push({
+        y: (i + 1) / (count + 1),
+        amp: 18 + (i % 3) * 14,
+        freq: 0.0012 + (i % 4) * 0.00035,
+        speed: 0.35 + (i % 5) * 0.12,
+        phase: i * 1.7,
+        stroke: p.stroke,
+        width: p.width
+      });
+    }
+  }
 
-  for (let i = 0; i < TOTAL; i++) {
-    const drop = document.createElement('div');
-    drop.className = 'drop';
+  function draw() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    ctx.clearRect(0, 0, vw, vh);
 
-    // depth: 0 (far) -> 1 (near)
-    const depth = Math.random();
-    const size = rand(12, 40) * (0.5 + depth);      // near = bigger
-    const opacity = 0.35 + depth * 0.55;            // near = more opaque
-    const blur = (1 - depth) * 2.2;                 // far = softer
-    const fallDur = rand(22, 12) - depth * 4;       // near = a touch faster
-    const swayDur = rand(3.5, 7);
+    for (const r of ribbons) {
+      ctx.beginPath();
+      ctx.lineWidth = r.width;
+      ctx.strokeStyle = r.stroke;
+      ctx.lineCap = 'round';
 
-    drop.style.left = rand(-2, 100) + 'vw';
-    drop.style.width = size + 'px';
-    drop.style.height = size + 'px';
-    drop.style.opacity = opacity.toFixed(2);
-    drop.style.filter = blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : 'none';
-    drop.style.zIndex = Math.round(depth * 5);
-    drop.style.animationDuration = fallDur.toFixed(1) + 's';
-    drop.style.animationDelay = (-rand(0, fallDur)).toFixed(1) + 's';
-
-    const inner = document.createElement('span');
-    inner.className = 'spin';
-    inner.style.animationDuration = swayDur.toFixed(1) + 's';
-    inner.style.animationDelay = (-rand(0, swayDur)).toFixed(1) + 's';
-
-    const roll = Math.random();
-    if (roll < 0.45) {
-      inner.innerHTML = shapes.leaf(pick(greens));
-    } else if (roll < 0.78) {
-      inner.innerHTML = shapes.petal(pick(petals));
-    } else {
-      inner.innerHTML = shapes.flower(pick(petals), pick(centers));
+      const baseY = vh * (0.18 + r.y * 0.55);
+      for (let x = -40; x <= vw + 40; x += 8) {
+        const y = baseY
+          + Math.sin(x * r.freq + t * r.speed + r.phase) * r.amp
+          + Math.sin(x * r.freq * 0.45 - t * r.speed * 0.7 + r.phase) * (r.amp * 0.45);
+        if (x === -40) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
     }
 
-    drop.appendChild(inner);
-    layer.appendChild(drop);
+    // soft vapor blobs drifting along the flow
+    for (let i = 0; i < 6; i++) {
+      const x = ((t * (12 + i * 7) + i * 170) % (vw + 120)) - 60;
+      const y = vh * (0.25 + (i % 3) * 0.18)
+        + Math.sin(t * 0.4 + i) * 24;
+      const radius = 28 + (i % 3) * 16;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      g.addColorStop(0, 'rgba(255, 255, 255, 0.18)');
+      g.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (!reduceMotion) {
+      t += 0.016;
+      requestAnimationFrame(draw);
+    }
   }
+
+  resize();
+  makeRibbons();
+  draw();
+
+  window.addEventListener('resize', () => {
+    resize();
+    makeRibbons();
+    if (reduceMotion) draw();
+  });
 })();
 </script>
 </body>
